@@ -1,35 +1,62 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+// import Background from "./components/Background"
 
-function App() {
-  const [count, setCount] = useState(0)
+import TaskHandler from './components/TaskHandler';
+import OutputHandler from './components/OutputHandler';
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+export interface Note {
+  id: string;
+  task: string;
+  isActive: boolean;
+  isCompleted: boolean;
 }
 
-export default App
+function App() {
+  const [note, setNote] = useState<Note[]>([]);
+  const [input, setInput] = useState<string>('');
+
+  const handleAddNote = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setInput(event.target.value);
+  };
+
+  const handleSubmitForm = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    const inputValue = input.trim();
+
+    if (inputValue) {
+      setNote([
+        ...note,
+        {
+          id: crypto.randomUUID(),
+          task: inputValue,
+          isActive: true,
+          isCompleted: false,
+        },
+      ]);
+      setInput('');
+    } else
+      console.error(
+        `${inputValue} as a value is not valid to be added to the list`,
+      );
+  };
+
+  const removeNote = (id: string): void => {
+    setNote(note.filter((item) => id !== item.id));
+  };
+
+  useEffect(() => {
+    console.log(note);
+  }, [note]);
+
+  return (
+    <div>
+      <TaskHandler
+        input={input}
+        handleAddNote={handleAddNote}
+        handleSubmitForm={handleSubmitForm}
+      />
+      <OutputHandler taskList={note} removeNote={removeNote} setNote={setNote} />
+    </div>
+  );
+}
+export default App;
