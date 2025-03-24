@@ -1,8 +1,9 @@
-import { Note } from "../App";
+import { Note } from '../App';
+import { AllowedFilterString } from './OutputHandler';
 
 interface FilterItemsProps {
   numberOfItems: number;
-  setFilter: React.Dispatch<React.SetStateAction<string>>;
+  setFilter: React.Dispatch<React.SetStateAction<AllowedFilterString>>;
   setNote: React.Dispatch<React.SetStateAction<Note[]>>;
 }
 function FilterItems({ numberOfItems, setFilter, setNote }: FilterItemsProps) {
@@ -20,7 +21,7 @@ function FilterItems({ numberOfItems, setFilter, setNote }: FilterItemsProps) {
       </button>{' '}
       <button
         onClick={() =>
-          setNote(prevValue => prevValue.filter(item => !item.isCompleted))
+          setNote((prevValue) => prevValue.filter((item) => !item.isCompleted))
         }
         className="border-1 px-2"
       >

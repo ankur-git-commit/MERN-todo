@@ -8,8 +8,10 @@ interface OutputProps {
   setNote: React.Dispatch<React.SetStateAction<Note[]>>;
 }
 
+export type AllowedFilterString = 'all' | 'completed' | 'active';
+
 function OutputHandler({ taskList, removeNote, setNote }: OutputProps) {
-  const [filter, setFilter] = useState<string>('all');
+  const [filter, setFilter] = useState<AllowedFilterString>('all');
 
   const handleToggle = (id: string): void => {
     setNote((prevNote) =>
@@ -61,7 +63,7 @@ function OutputHandler({ taskList, removeNote, setNote }: OutputProps) {
       {noteListPlaceHolder}
 
       <FilterItems
-        numberOfItems={filteredList.filter(task => task.isActive).length}
+        numberOfItems={filteredList.filter((task) => task.isActive).length}
         setFilter={setFilter}
         setNote={setNote}
       />

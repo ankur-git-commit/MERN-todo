@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-// import Background from "./components/Background"
+import Background from './components/Background';
 
 import TaskHandler from './components/TaskHandler';
 import OutputHandler from './components/OutputHandler';
@@ -40,7 +40,7 @@ function App() {
       );
   };
 
-  const removeNote = (id: string): void => {
+  const handleRemoveNote = (id: string): void => {
     setNote(note.filter((item) => id !== item.id));
   };
 
@@ -49,14 +49,22 @@ function App() {
   }, [note]);
 
   return (
-    <div>
-      <TaskHandler
-        input={input}
-        handleAddNote={handleAddNote}
-        handleSubmitForm={handleSubmitForm}
-      />
-      <OutputHandler taskList={note} removeNote={removeNote} setNote={setNote} />
-    </div>
+    <>
+      <Background>
+        <main className="flex flex-col items-center justify-center">
+          <TaskHandler
+            input={input}
+            handleAddNote={handleAddNote}
+            handleSubmitForm={handleSubmitForm}
+          />
+          <OutputHandler
+            taskList={note}
+            removeNote={handleRemoveNote}
+            setNote={setNote}
+          />
+        </main>
+      </Background>
+    </>
   );
 }
 export default App;
