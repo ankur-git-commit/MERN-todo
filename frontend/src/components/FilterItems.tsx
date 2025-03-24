@@ -8,25 +8,36 @@ interface FilterItemsProps {
 }
 function FilterItems({ numberOfItems, setFilter, setNote }: FilterItemsProps) {
   return (
-    <div>
+    <div className="flex flex-row justify-between px-5 py-6 text-sm text-[#9495A5]">
       <p>{numberOfItems} items left </p>
-      <button onClick={() => setFilter('all')} className="border-1 px-2">
-        All
-      </button>{' '}
-      <button onClick={() => setFilter('active')} className="border-1 px-2">
-        Active
-      </button>{' '}
-      <button onClick={() => setFilter('completed')} className="border-1 px-2">
-        Completed
-      </button>{' '}
+      <div className="flex gap-5">
+        <button
+          onClick={() => setFilter('all')}
+          className={`cursor-pointer font-bold hover:text-black`}
+        >
+          All
+        </button>
+        <button
+          onClick={() => setFilter('active')}
+          className={`cursor-pointer font-bold hover:text-black`}
+        >
+          Active
+        </button>
+        <button
+          onClick={() => setFilter('completed')}
+          className={`cursor-pointer font-bold hover:text-black`}
+        >
+          Completed
+        </button>
+      </div>
       <button
+        className="cursor-pointer hover:text-black"
         onClick={() =>
           setNote((prevValue) => prevValue.filter((item) => !item.isCompleted))
         }
-        className="border-1 px-2"
       >
         Clear Completed
-      </button>{' '}
+      </button>
     </div>
   );
 }

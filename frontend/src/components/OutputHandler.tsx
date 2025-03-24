@@ -1,16 +1,23 @@
 import { useState } from 'react';
 import { Note } from '../App';
 import FilterItems from './FilterItems';
+import removeIcon from '../assets/icons/icon-cross.svg';
 
 interface OutputProps {
   taskList: Note[];
   removeNote: (id: string) => void;
   setNote: React.Dispatch<React.SetStateAction<Note[]>>;
+  className?: string;
 }
 
 export type AllowedFilterString = 'all' | 'completed' | 'active';
 
-function OutputHandler({ taskList, removeNote, setNote }: OutputProps) {
+function OutputHandler({
+  taskList,
+  removeNote,
+  setNote,
+  className = '',
+}: OutputProps) {
   const [filter, setFilter] = useState<AllowedFilterString>('all');
 
   const handleToggle = (id: string): void => {
@@ -37,30 +44,51 @@ function OutputHandler({ taskList, removeNote, setNote }: OutputProps) {
     filteredList.length > 0 ? (
       filteredList.map((item) => {
         return (
-          <span key={item.id}>
-            <input
-              onChange={() => handleToggle(item.id)}
-              type="checkbox"
-              id={`task-${item.id}`}
-              checked={item.isCompleted ? true : false}
-            />
-            <label htmlFor={`task-${item.id}`}>{item.task}</label>{' '}
+          <span
+            className="b-[#E3E4F1] group flex w-full flex-row items-center justify-between border-b-1 border-[#E3E4F1] p-6 text-lg text-[#494C6B]"
+            key={item.id}
+          >
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <input
+                  onChange={() => handleToggle(item.id)}
+                  type="checkbox"
+                  id={`task-${item.id}`}
+                  checked={item.isCompleted}
+                  className="peer absolute h-6 w-6 cursor-pointer opacity-0"
+                />
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white peer-checked:border-none peer-checked:bg-gradient-to-br peer-checked:from-blue-400 peer-checked:to-purple-500">
+                  {item.isCompleted && (
+                    <img
+                      src="/src/assets/icons/icon-check.svg"
+                      alt="Checked"
+                      className="h-3 w-3"
+                    />
+                  )}
+                </div>
+              </div>
+              <label className={`cursor-pointer ${item.isCompleted ? 'line-through text-gray-300' : ''}`} htmlFor={`task-${item.id}`}>
+                {item.task}
+              </label>
+            </div>
             <button
-              className={`border-1 px-2`}
+              className="invisible cursor-pointer border-none group-hover:visible"
               onClick={() => removeNote(item.id)}
             >
-              X
+              <img src={removeIcon} alt="remove" />
             </button>
           </span>
         );
       })
     ) : (
-      <p>Please Add a task</p>
+      <p className="border-b-1 border-[#E3E4F1] p-20 text-center">
+        Please Add a task
+      </p>
     );
 
   return (
-    <div>
-      {noteListPlaceHolder}
+    <div className={`${className}`}>
+      <div>{noteListPlaceHolder}</div>
 
       <FilterItems
         numberOfItems={filteredList.filter((task) => task.isActive).length}

@@ -8,9 +8,17 @@ interface BackgroundProps {
 
 function Background({ children }: BackgroundProps) {
   return (
-    <div>
-      <img className="" src={bgDesktopLight} alt="background-desktop-light" />
-      <div>{children}</div>
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="relative">
+        <img
+          className="h-96 w-full object-cover"
+          src={bgDesktopLight}
+          alt="background-desktop-light"
+        />
+        <div className="absolute top-32 right-0 left-0 mx-auto">
+          <div className="mx-6">{children}</div>
+        </div>
+      </div>
     </div>
   );
 }

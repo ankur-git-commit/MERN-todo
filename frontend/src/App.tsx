@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Background from './components/Background';
-
+import Header from './components/Header';
 import TaskHandler from './components/TaskHandler';
 import OutputHandler from './components/OutputHandler';
 
@@ -28,7 +28,7 @@ function App() {
         ...note,
         {
           id: crypto.randomUUID(),
-          task: inputValue,
+          task: inputValue[0].toUpperCase() + inputValue.slice(1).toLowerCase(),
           isActive: true,
           isCompleted: false,
         },
@@ -51,17 +51,24 @@ function App() {
   return (
     <>
       <Background>
-        <main className="flex flex-col items-center justify-center">
-          <TaskHandler
-            input={input}
-            handleAddNote={handleAddNote}
-            handleSubmitForm={handleSubmitForm}
-          />
-          <OutputHandler
-            taskList={note}
-            removeNote={handleRemoveNote}
-            setNote={setNote}
-          />
+        <main className="font-josefin m-auto flex w-full max-w-[540px] flex-col items-center justify-center">
+          <Header />
+          <section className="w-full">
+            <TaskHandler
+              className="mb-6 flex w-full flex-row rounded-md bg-[#FFFFFF] p-6"
+              input={input}
+              handleAddNote={handleAddNote}
+              handleSubmitForm={handleSubmitForm}
+            />
+          </section>
+          <section className="mb-10 w-full">
+            <OutputHandler
+              className="flex w-full flex-col rounded-md bg-[#FFFFFF] shadow-lg"
+              taskList={note}
+              removeNote={handleRemoveNote}
+              setNote={setNote}
+            />
+          </section>
         </main>
       </Background>
     </>
