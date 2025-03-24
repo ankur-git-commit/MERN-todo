@@ -57,7 +57,7 @@ function OutputHandler({
                   checked={item.isCompleted}
                   className="peer absolute h-6 w-6 cursor-pointer opacity-0"
                 />
-                <div className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white peer-checked:border-none peer-checked:bg-gradient-to-br peer-checked:from-blue-400 peer-checked:to-purple-500">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white transition-colors duration-200 peer-checked:border-none peer-checked:bg-gradient-to-br peer-checked:from-blue-400 peer-checked:to-purple-500 peer-hover:border-blue-500 hover:border-blue-500">
                   {item.isCompleted && (
                     <img
                       src="/src/assets/icons/icon-check.svg"
@@ -67,7 +67,10 @@ function OutputHandler({
                   )}
                 </div>
               </div>
-              <label className={`cursor-pointer ${item.isCompleted ? 'line-through text-gray-300' : ''}`} htmlFor={`task-${item.id}`}>
+              <label
+                className={`cursor-pointer ${item.isCompleted ? 'text-gray-300 line-through' : ''}`}
+                htmlFor={`task-${item.id}`}
+              >
                 {item.task}
               </label>
             </div>
@@ -94,6 +97,7 @@ function OutputHandler({
         numberOfItems={filteredList.filter((task) => task.isActive).length}
         setFilter={setFilter}
         setNote={setNote}
+        filter={filter}
       />
     </div>
   );
