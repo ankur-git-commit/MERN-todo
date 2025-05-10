@@ -2,7 +2,7 @@
   "name": "mern-todo",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "backend/server.js",
   "scripts": {
     "server": "nodemon --exec tsx backend/server.ts",
     "build": "tsc"
