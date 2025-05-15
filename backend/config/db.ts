@@ -1,20 +1,14 @@
-import mongoose from "mongoose"
+import mongoose, { ConnectOptions } from "mongoose"
 
-interface MongooseConnection {
-    connection: {
-        host: string
-    }
-}
-
-const connectDB = async (): Promise<string | void> => {
+const connectDB = async (): Promise<void> => {
     try {
         const base_uri: string =
             process.env.MONGO_URI || "fallback_connection_string"
         const dbName: string = "Todo"
 
-        const conn: MongooseConnection = await mongoose.connect(base_uri, {
+        const conn = await mongoose.connect(base_uri, {
             dbName,
-        })
+        } as ConnectOptions)
 
         console.log(
             `MongoDB is connected successfully at: ${conn.connection.host}`
