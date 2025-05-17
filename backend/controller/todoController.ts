@@ -10,6 +10,8 @@ const getAllTasks = async (_req: Request, res: Response): Promise<void> => {
     res.status(400).json({ items })
 }
 
+
+
 const addTask = async (req: Request, res: Response): Promise<void> => {
     if (!req.body || !req.body.item) {
         res.status(400).json({ clientError: "Item is required" })
@@ -53,6 +55,10 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
         return
     }
 }
+
+
+
+// @desc 
 
 const updateTask = async (req: Request, res: Response): Promise<void> => {
     if (!req.query || !req.query.id) {
