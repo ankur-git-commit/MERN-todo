@@ -1,17 +1,47 @@
 import { Request, Response } from "express"
 import Todo from "../models/todoModel"
 
+
+// @desc get all tasks
+// GET /api/tasks
+
 const getAllTasks = async (_req: Request, res: Response): Promise<void> => {
     const tasks = await Todo.find()
 
     console.log(tasks)
     const items = tasks.map((todo) => todo.task)
-    
+
     res.status(400).json({ items })
 }
 
+// @desc get a single task by its id
+// GET /api/tasks
+const getTask = async (req: Request, res: Response) => {
+    if (!req.params || !req.params.id) {
+        res.status(400).json({
+            message: "No task id provided by the user"
+        })
+    }
 
+    const {id: taskID} = req.params
 
+    try {
+        const taskDetails = await Todo.findById(taskID)
+        console.log(taskDetails);
+        
+        res.send("found")
+    } catch (error) {
+        console.log(`Error in ${req.baseUrl} route: `, error)
+        if (!res.headersSent){
+            res.status(500).json({
+                message: "Server Error"
+            })
+        }
+    }
+}
+
+// @desc add a new task
+// POST /api/tasks/
 const addTask = async (req: Request, res: Response): Promise<void> => {
     if (!req.body || !req.body.item) {
         res.status(400).json({ clientError: "Item is required" })
@@ -56,95 +86,58 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-
-
-// @desc 
-
+// @desc Update an existing task
+// @route PUT api/tasks/:id
+//
 const updateTask = async (req: Request, res: Response): Promise<void> => {
-    if (!req.query || !req.query.id) {
+    console.log(req.params.id)
+    if (!req.params.id) {
         res.status(400).json({
-            clientError: "No task id was provided by the user",
+            message: "id not provided by the user",
         })
         return
     }
 
-    const { id } = req.query
+    const { id: taskID } = req.params
 
     try {
-        const task = await Todo.findById(id).select("isCompleted -_id")
-        console.log(task)
-
-        if (!task) {
-            res.status(404).json({
-                error: "Not found",
-                message: "item not present in database",
-            })
-            return
-        }
-
-        const updateTask = await Todo.updateOne(
-            { _id: id },
-            { $set: { isCompleted: !task.isCompleted } }
+        const taskCompletion = await Todo.findByIdAndUpdate(
+            taskID,
+            [{ $set: { isCompleted: { $not: "$isCompleted" } } }],
+            { new: true }
         )
 
-        if (updateTask?.acknowledged) {
-            res.status(200).json({
-                success: `${id} has been updated`,
-                isCompleted: !task.isCompleted,
+        if (!taskCompletion) {
+            res.status(404).json({
+                message: "Task not found in the database",
             })
             return
         }
-    } catch (error) {
-        console.error(`Error in ${req.baseUrl} route:`, error)
 
+        res.status(200).json({
+            success: `Task: ${taskID} has been updated`,
+            message: ` '${taskCompletion.task}' has been set to '${taskCompletion.isCompleted}' `,
+            isCompleted: taskCompletion?.isCompleted,
+        })
+        return
+    } catch (error) {
+        console.error(`Error in ${req.baseUrl} rote:`, error)
         if (!res.headersSent) {
-            res.status(500).json({ error: "Server Error" })
+            res.status(500).json({
+                error: "Server Error",
+            })
         }
+
         return
     }
 }
+
+// @desc delete a task
+// @route DELETE /:taskname
 
 const deleteTask = async (req: Request, res: Response): Promise<void> => {
-    console.log(req.query.item)
-
-    if (!req.query || !req.query.item) {
-        res.status(400).json({ clientError: "No item given to delete" })
-        return
-    }
-
-    const { item: tasktoDelete } = req.query
-
-    try {
-        const taskInDB = await Todo.findOne({
-            task: tasktoDelete,
-        })
-        console.log(taskInDB)
-
-        if (!taskInDB) {
-            res.status(404).json({
-                error: "Not found",
-                message: "item not present in database",
-            })
-            return
-        }
-
-        const result = await Todo.deleteOne({ _id: taskInDB._id })
-
-        if (result?.acknowledged) {
-            res.status(200).json({
-                success: `${tasktoDelete} has been successfully removed from the todo list`,
-                taskDelete: tasktoDelete,
-            })
-            return
-        }
-    } catch (error) {
-        console.error(`Error in ${req.baseUrl} route:`, error)
-
-        if (!res.headersSent) {
-            res.status(500).json({ error: "Server Error" })
-        }
-        return
-    }
+    
+    res.status(200).send("Deleted")
 }
 
-export { getAllTasks, addTask, updateTask, deleteTask }
+export { getAllTasks, addTask, updateTask, deleteTask, getTask }
