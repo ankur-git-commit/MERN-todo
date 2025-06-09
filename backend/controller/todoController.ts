@@ -1,12 +1,10 @@
 import { Request, Response } from "express"
 import Todo from "../models/todoModel"
 
-
 // @desc get all tasks
 // GET /api/tasks
-
 const getAllTasks = async (_req: Request, res: Response): Promise<void> => {
-    const tasks = await Todo.find()
+    const tasks = await Todo.find().lean()
 
     console.log(tasks)
     const items = tasks.map((todo) => todo.task)
@@ -19,24 +17,36 @@ const getAllTasks = async (_req: Request, res: Response): Promise<void> => {
 const getTask = async (req: Request, res: Response) => {
     if (!req.params || !req.params.id) {
         res.status(400).json({
-            message: "No task id provided by the user"
+            message: "No task id provided by the user",
         })
+        return
     }
 
-    const {id: taskID} = req.params
+    const { id: taskID } = req.params
 
     try {
         const taskDetails = await Todo.findById(taskID)
-        console.log(taskDetails);
-        
-        res.send("found")
+
+        if (!taskDetails) {
+            res.status(404).json({
+                message: "Task not found",
+            })
+            return
+        }
+
+        res.status(200).json({
+            success: "Task retrived",
+            taskName: taskDetails.task,
+        })
+        return
     } catch (error) {
         console.log(`Error in ${req.baseUrl} route: `, error)
-        if (!res.headersSent){
+        if (!res.headersSent) {
             res.status(500).json({
-                message: "Server Error"
+                message: "Server Error",
             })
         }
+        return
     }
 }
 
@@ -88,7 +98,6 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
 
 // @desc Update an existing task
 // @route PUT api/tasks/:id
-//
 const updateTask = async (req: Request, res: Response): Promise<void> => {
     console.log(req.params.id)
     if (!req.params.id) {
@@ -134,10 +143,33 @@ const updateTask = async (req: Request, res: Response): Promise<void> => {
 
 // @desc delete a task
 // @route DELETE /:taskname
-
 const deleteTask = async (req: Request, res: Response): Promise<void> => {
+    console.log('test');
     
-    res.status(200).send("Deleted")
+    if (!req.params || !req.params.id) {
+        res.status(400).json({
+            message: "id not provided by the user",
+        })
+        return
+    }
+
+    const { id: taskID } = req.params
+
+    try {
+        const taskDeletion = await Todo.findByIdAndDelete(taskID)
+        console.log(taskDeletion)
+        if (!taskDeletion) {
+        }
+        
+    } catch (error) {
+        console.error(`Error in ${req.baseUrl} rote:`, error)
+        if (!res.headersSent) {
+            res.status(500).json({
+                error: "Server Error",
+            })
+        }
+        return
+    }
 }
 
 export { getAllTasks, addTask, updateTask, deleteTask, getTask }
