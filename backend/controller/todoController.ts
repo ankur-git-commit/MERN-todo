@@ -62,27 +62,53 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
     const { item: task } = req.body
 
     try {
-        const duplicateTask = await Todo.findOne({ task })
+        if (Array.isArray(task)) {
+            const taskObject = task.map((item) => ({
+                task: item,
+            }))
 
-        if (duplicateTask) {
-            res.status(400).json({
-                sucess: false,
-                error: "Duplicate item",
-                message: `'${task}' is already in the list`,
+            console.log(taskObject)
+
+            const taskList = await Todo.insertMany(taskObject)
+
+            if (!taskList) {
+                res.status(400).json({
+                    success: false,
+                    message: "unable to add the items in the db",
+                })
+                return
+            }
+
+            res.status(201).json({
+                success: true,
+                count: taskList.length,
+                tasksAdded: taskList,
             })
+
+            return
+        } else {
+            const duplicateTask = await Todo.findOne({ task })
+
+            if (duplicateTask) {
+                res.status(400).json({
+                    sucess: false,
+                    error: "Duplicate item",
+                    message: `'${task}' is already in the list`,
+                })
+                return
+            }
+
+            // If not a duplicate, proceed to create
+            const createdTask = await Todo.create({
+                task,
+            })
+            res.status(201).json({
+                success: "The task has been added successfully",
+                taskAdded: createdTask,
+            })
+
             return
         }
-
-        // If not a duplicate, proceed to create
-        const createdTask = await Todo.create({
-            task,
-        })
-
-        res.status(201).json({
-            success: "The task has been added successfully",
-            taskAdded: createdTask,
-        })
-        return
     } catch (error) {
         console.error(`Error in ${req.baseUrl} route:`, error)
 
@@ -182,7 +208,14 @@ const deleteTask = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-const deleteCompletedTask = async (req: Response, res: Response) => {}
+const deleteCompletedTask = async (req: Request, res: Response) => {
+    if (!req.params || !req.params.id) {
+        res.status(400).json({
+            message: "id not provided by the user",
+        })
+        return
+    }
+}
 
 export {
     getAllTasks,

@@ -1,5 +1,4 @@
 import { Router } from "express"
-import validateId from "../middleware/validateId"
 import {
     getAllTasks,
     getTask,
