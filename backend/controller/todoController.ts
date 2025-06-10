@@ -9,7 +9,7 @@ const getAllTasks = async (_req: Request, res: Response): Promise<void> => {
     console.log(tasks)
     const items = tasks.map((todo) => todo.task)
 
-    res.status(400).json({ items })
+    res.status(200).json({ items })
 }
 
 // @desc get a single task by its id
@@ -29,6 +29,7 @@ const getTask = async (req: Request, res: Response) => {
 
         if (!taskDetails) {
             res.status(404).json({
+                sucess: false,
                 message: "Task not found",
             })
             return
@@ -65,6 +66,7 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
 
         if (duplicateTask) {
             res.status(400).json({
+                sucess: false,
                 error: "Duplicate item",
                 message: `'${task}' is already in the list`,
             })
@@ -118,12 +120,13 @@ const updateTask = async (req: Request, res: Response): Promise<void> => {
 
         if (!taskCompletion) {
             res.status(404).json({
+                sucess: false,
                 message: "Task not found in the database",
             })
             return
         }
 
-        res.status(200).json({
+        res.status(201).json({
             success: `Task: ${taskID} has been updated`,
             message: ` '${taskCompletion.task}' has been set to '${taskCompletion.isCompleted}' `,
             isCompleted: taskCompletion?.isCompleted,
@@ -144,8 +147,8 @@ const updateTask = async (req: Request, res: Response): Promise<void> => {
 // @desc delete a task
 // @route DELETE /:taskname
 const deleteTask = async (req: Request, res: Response): Promise<void> => {
-    console.log('test');
-    
+    console.log("test")
+
     if (!req.params || !req.params.id) {
         res.status(400).json({
             message: "id not provided by the user",
@@ -159,8 +162,15 @@ const deleteTask = async (req: Request, res: Response): Promise<void> => {
         const taskDeletion = await Todo.findByIdAndDelete(taskID)
         console.log(taskDeletion)
         if (!taskDeletion) {
+            res.status(404).json({
+                success: false,
+                message: "item not found in db",
+            })
         }
-        
+        res.status(200).json({
+            success: true,
+            message: "deleted",
+        })
     } catch (error) {
         console.error(`Error in ${req.baseUrl} rote:`, error)
         if (!res.headersSent) {
@@ -172,4 +182,13 @@ const deleteTask = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-export { getAllTasks, addTask, updateTask, deleteTask, getTask }
+const deleteCompletedTask = async (req: Response, res: Response) => {}
+
+export {
+    getAllTasks,
+    getTask,
+    addTask,
+    updateTask,
+    deleteTask,
+    deleteCompletedTask,
+}

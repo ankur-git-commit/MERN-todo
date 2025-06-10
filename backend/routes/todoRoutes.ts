@@ -14,8 +14,8 @@ router.route("/").get(getAllTasks).post(addTask)
 router
     .route("/:id")
     .get(getTask)
-    .put(validateId, updateTask)
-    .delete(validateId, deleteTask)
+    .put(updateTask)
+    .delete(deleteTask)
 // router.route("/:taskname").delete(deleteTask)
 
 export { router as taskRouter }
