@@ -59,11 +59,11 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
         return
     }
 
-    const { item: task } = req.body
+    const { task: taskName } = req.body
 
     try {
-        if (Array.isArray(task)) {
-            const taskObject = task.map((item) => ({
+        if (Array.isArray(taskName)) {
+            const taskObject = taskName.map((item) => ({
                 task: item,
             }))
 
@@ -87,20 +87,20 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
 
             return
         } else {
-            const duplicateTask = await Todo.findOne({ task })
+            const duplicateTask = await Todo.findOne({ taskName })
 
             if (duplicateTask) {
                 res.status(400).json({
                     sucess: false,
                     error: "Duplicate item",
-                    message: `'${task}' is already in the list`,
+                    message: `'${taskName}' is already in the list`,
                 })
                 return
             }
 
             // If not a duplicate, proceed to create
             const createdTask = await Todo.create({
-                task,
+                taskName,
             })
             res.status(201).json({
                 success: "The task has been added successfully",

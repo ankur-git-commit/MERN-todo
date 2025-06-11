@@ -25,11 +25,14 @@
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "isomorphic-dompurify": "^2.25.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
+    "@types/express-validator": "^2.20.33",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.15.18",
     "concurrently": "^9.1.2",
