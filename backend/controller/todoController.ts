@@ -159,7 +159,7 @@ const updateTask = async (req: Request, res: Response): Promise<void> => {
         })
         return
     } catch (error) {
-        console.error(`Error in ${req.baseUrl} rote:`, error)
+        console.error(`Error in ${req.baseUrl} route:`, error)
         if (!res.headersSent) {
             res.status(500).json({
                 error: "Server Error",
@@ -198,7 +198,7 @@ const deleteTask = async (req: Request, res: Response): Promise<void> => {
             message: "deleted",
         })
     } catch (error) {
-        console.error(`Error in ${req.baseUrl} rote:`, error)
+        console.error(`Error in ${req.baseUrl} route:`, error)
         if (!res.headersSent) {
             res.status(500).json({
                 error: "Server Error",
@@ -211,25 +211,37 @@ const deleteTask = async (req: Request, res: Response): Promise<void> => {
 // @desc delete completed task
 // DELETE /api/tasks
 
-const deleteCompletedTask = async (req: Request, res: Response) => {
-    if (!req.params || !req.params.id) {
-        res.status(400).json({
-            message: "id not provided by the user",
-        })
-        return
-    }
-
-    const { task: taskList } = req.body.params
+const deleteCompletedTask = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    
 
     try {
-        
-        
-    } catch (error) {
-        
-    }
-    
+        const clearCompletedTasks = await Todo.deleteMany({ isCompleted: true })
+        console.log(clearCompletedTasks)
 
-    
+        if (!clearCompletedTasks) {
+            res.status(400).json({
+                success: false,
+                message: "completed tasks couldn't be deleted",
+            })
+            return
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Completed tasks have been deleted",
+        })
+    } catch (error) {
+        console.error(`Error in ${req.baseUrl} route:`, error)
+        if (!res.headersSent) {
+            res.status(500).json({
+                error: "Server Error",
+            })
+        }
+        return
+    }
 }
 
 export {
