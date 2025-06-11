@@ -208,6 +208,9 @@ const deleteTask = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
+// @desc delete completed task
+// DELETE /api/tasks
+
 const deleteCompletedTask = async (req: Request, res: Response) => {
     if (!req.params || !req.params.id) {
         res.status(400).json({
@@ -215,6 +218,18 @@ const deleteCompletedTask = async (req: Request, res: Response) => {
         })
         return
     }
+
+    const { task: taskList } = req.body.params
+
+    try {
+        
+        
+    } catch (error) {
+        
+    }
+    
+
+    
 }
 
 export {
