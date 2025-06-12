@@ -60,7 +60,8 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
     }
 
     const { task: taskName } = req.body
-
+    console.log(taskName);
+    
     try {
         if (Array.isArray(taskName)) {
             const taskObject = taskName.map((item) => ({
