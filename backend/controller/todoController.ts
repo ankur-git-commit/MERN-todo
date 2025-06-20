@@ -1,4 +1,5 @@
 import { Request, Response } from "express"
+import { AddTaskType } from "../middleware/validation"
 import Todo from "../models/todoModel"
 
 // @desc get all tasks
@@ -15,12 +16,12 @@ const getAllTasks = async (_req: Request, res: Response): Promise<void> => {
 // @desc get a single task by its id
 // GET /api/tasks
 const getTask = async (req: Request, res: Response) => {
-    if (!req.params || !req.params.id) {
-        res.status(400).json({
-            message: "No task id provided by the user",
-        })
-        return
-    }
+    // if (!req.params || !req.params.id) {
+    //     res.status(400).json({
+    //         message: "No task id provided by the user",
+    //     })
+    //     return
+    // }
 
     const { id: taskID } = req.params
 
@@ -30,7 +31,7 @@ const getTask = async (req: Request, res: Response) => {
         if (!taskDetails) {
             res.status(404).json({
                 sucess: false,
-                message: "Task not found",
+                message: "Task not found in database",
             })
             return
         }
@@ -54,21 +55,21 @@ const getTask = async (req: Request, res: Response) => {
 // @desc add a new task
 // POST /api/tasks/
 const addTask = async (req: Request, res: Response): Promise<void> => {
-    if (!req.body || !req.body.item) {
-        res.status(400).json({ clientError: "Item is required" })
-        return
-    }
+    // if (!req.body || !req.body.item) {
+    //     res.status(400).json({ clientError: "Item is required" })
+    //     return
+    // }
 
-    const { task: taskName } = req.body
-    console.log(taskName);
-    
+    const { item: taskName }: AddTaskType = req.body
+    console.log(taskName)
+
     try {
         if (Array.isArray(taskName)) {
             const taskObject = taskName.map((item) => ({
                 task: item,
             }))
 
-            console.log(taskObject)
+            // console.log(taskObject)
 
             const taskList = await Todo.insertMany(taskObject)
 
@@ -88,7 +89,10 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
 
             return
         } else {
-            const duplicateTask = await Todo.findOne({ taskName })
+            const duplicateTask = await Todo.findOne({ taskName }).collation({
+                locale: "en",
+                strength: 2, // Case-insensitive comparison
+            })
 
             if (duplicateTask) {
                 res.status(400).json({
@@ -128,27 +132,35 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
 // @desc Update an existing task
 // @route PUT api/tasks/:id
 const updateTask = async (req: Request, res: Response): Promise<void> => {
-    console.log(req.params.id)
-    if (!req.params.id) {
-        res.status(400).json({
-            message: "id not provided by the user",
-        })
-        return
-    }
+    // console.log(req.params.id)
+
+    // if (!req.params.id) {
+    //     res.status(400).json({
+    //         message: "id not provided by the user",
+    //     })
+    //     return
+    // }
 
     const { id: taskID } = req.params
 
     try {
         const taskCompletion = await Todo.findByIdAndUpdate(
             taskID,
-            [{ $set: { isCompleted: { $not: "$isCompleted" } } }],
+            [
+                {
+                    $set: {
+                        isCompleted: { $not: "$isCompleted" },
+                        isActive: { $not: "$isActive" },
+                    },
+                },
+            ],
             { new: true }
         )
 
         if (!taskCompletion) {
             res.status(404).json({
                 sucess: false,
-                message: "Task not found in the database",
+                message: "Task not found in database",
             })
             return
         }
@@ -176,12 +188,12 @@ const updateTask = async (req: Request, res: Response): Promise<void> => {
 const deleteTask = async (req: Request, res: Response): Promise<void> => {
     console.log("test")
 
-    if (!req.params || !req.params.id) {
-        res.status(400).json({
-            message: "id not provided by the user",
-        })
-        return
-    }
+    // if (!req.params || !req.params.id) {
+    //     res.status(400).json({
+    //         message: "id not provided by the user",
+    //     })
+    //     return
+    // }
 
     const { id: taskID } = req.params
 
@@ -191,7 +203,7 @@ const deleteTask = async (req: Request, res: Response): Promise<void> => {
         if (!taskDeletion) {
             res.status(404).json({
                 success: false,
-                message: "item not found in db",
+                message: "Task not found in database",
             })
         }
         res.status(200).json({
@@ -216,8 +228,6 @@ const deleteCompletedTask = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    
-
     try {
         const clearCompletedTasks = await Todo.deleteMany({ isCompleted: true })
         console.log(clearCompletedTasks)
