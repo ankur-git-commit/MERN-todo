@@ -4,25 +4,32 @@ import Todo from "../models/todoModel"
 
 // @desc get all tasks
 // GET /api/tasks
-const getAllTasks = async (_req: Request, res: Response): Promise<void> => {
-    const tasks = await Todo.find().lean()
+const getAllTasks = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const tasks = await Todo.find().lean()
 
-    console.log(tasks)
-    const items = tasks.map((todo) => todo.task)
+        console.log(tasks)
+        const items = tasks.map((todo) => todo.task)
 
-    res.status(200).json({ items })
+        res.status(200).json({
+            success: true,
+            allTasks: items,
+        })
+        return
+    } catch (error) {
+        console.log(`Error in ${req.baseUrl} route: `, error)
+        if (!res.headersSent) {
+            res.status(500).json({
+                message: "Server Error",
+            })
+        }
+        return
+    }
 }
 
 // @desc get a single task by its id
 // GET /api/tasks
 const getTask = async (req: Request, res: Response) => {
-    // if (!req.params || !req.params.id) {
-    //     res.status(400).json({
-    //         message: "No task id provided by the user",
-    //     })
-    //     return
-    // }
-
     const { id: taskID } = req.params
 
     try {
@@ -55,11 +62,6 @@ const getTask = async (req: Request, res: Response) => {
 // @desc add a new task
 // POST /api/tasks/
 const addTask = async (req: Request, res: Response): Promise<void> => {
-    // if (!req.body || !req.body.item) {
-    //     res.status(400).json({ clientError: "Item is required" })
-    //     return
-    // }
-
     const { item: taskName }: AddTaskType = req.body
     console.log(taskName)
 
@@ -132,15 +134,6 @@ const addTask = async (req: Request, res: Response): Promise<void> => {
 // @desc Update an existing task
 // @route PUT api/tasks/:id
 const updateTask = async (req: Request, res: Response): Promise<void> => {
-    // console.log(req.params.id)
-
-    // if (!req.params.id) {
-    //     res.status(400).json({
-    //         message: "id not provided by the user",
-    //     })
-    //     return
-    // }
-
     const { id: taskID } = req.params
 
     try {
@@ -186,14 +179,6 @@ const updateTask = async (req: Request, res: Response): Promise<void> => {
 // @desc delete a task
 // @route DELETE /:taskname
 const deleteTask = async (req: Request, res: Response): Promise<void> => {
-    console.log("test")
-
-    // if (!req.params || !req.params.id) {
-    //     res.status(400).json({
-    //         message: "id not provided by the user",
-    //     })
-    //     return
-    // }
 
     const { id: taskID } = req.params
 

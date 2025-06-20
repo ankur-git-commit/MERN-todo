@@ -13,7 +13,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.get("/", (_req, res) => {
-    console.log("testing server")
+    console.log("server is working correctly")
 
     res.send({ message: "Hello World!" })
 })

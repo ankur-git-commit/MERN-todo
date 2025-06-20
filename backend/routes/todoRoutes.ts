@@ -22,7 +22,7 @@ router
     .delete(deleteCompletedTask)
 router
     .route("/:id")
-    .get(validateTaskParms, getTask)
+    .get(validateTaskParms,  getTask)
     .put(validateTaskParms, updateTask)
     .delete(validateTaskParms, deleteTask)
 
